@@ -1,3 +1,5 @@
+import numpy as np
+
 '''
 Refactoring "Metrics" in Python
 Each Metric object represents a metric space
@@ -24,13 +26,40 @@ class Metric:
 
 class DiscreteMetric(Metric):
     # implements the discrete metric over an arbitrary metric space
+
     def dist(self,obj1,obj2):
         # returns 0 if the objects have the same value, 0 otherwise
         return 0 if obj1 == obj2 else 1
 
-# class HammingDist
-# class LpNorm
-# class TaxicabMetric
+class HammingDist(Metric):
+    # implements the Hamming distance over the space of strings
+
+    def dist(self, obj1, obj2):
+        # returns the number of characters that are different between strings
+        # two strings MUST be the same length
+        dist = 0
+        list1 = ([*obj1]) # using unpack operator
+        list2 = ([*obj2]) # TODO: test that this works correctly
+        for i in range(len(list1)):
+            if list1[i] != list2[i]: dist+=1
+        return dist 
+        
+class LpNorm(Metric):
+    # implements the Lp norm over a vector space
+
+    # initialization
+    # self.p should be an integer greater than 1, or np.inf for the max norm
+    def __init__(self,p):
+        self.p = p
+        super().__init__()
+
+    def dist(self,obj1, obj2):
+        if self.p == np.inf: # max norm
+            return np.max(np.abs(obj1 - obj2))
+        else: # normal Lp norm
+            return np.sum(np.abs(obj1 - obj2)**self.p)**(1.0/self.p)
+
+# TaxicabMetric is same as L1 norm
 # class PAdicDist
 
 '''
