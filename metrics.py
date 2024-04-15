@@ -39,13 +39,14 @@ class HammingDist(Metric):
         # two strings MUST be the same length
         dist = 0
         list1 = ([*obj1]) # using unpack operator
-        list2 = ([*obj2]) # TODO: test that this works correctly
+        list2 = ([*obj2]) # test that this works correctly
         for i in range(len(list1)):
             if list1[i] != list2[i]: dist+=1
         return dist 
         
 class LpNorm(Metric):
     # implements the Lp norm over a vector space
+    # also supports the max norm
 
     # initialization
     # self.p should be an integer greater than 1, or np.inf for the max norm
@@ -59,8 +60,34 @@ class LpNorm(Metric):
         else: # normal Lp norm
             return np.sum(np.abs(obj1 - obj2)**self.p)**(1.0/self.p)
 
-# TaxicabMetric is same as L1 norm
-# class PAdicDist
+
+class PAdicDist(Metric):
+    # calculates the p-adic distance between integers
+
+    # initialization
+    # self.p should be a positive integer 
+    def __init__(self,p):
+        self.p = p
+        super().__init__()
+
+    def padic_value(self,obj):
+        # returns p-adic value of integer obj
+        if obj == 0:
+            return np.inf
+        else:
+            if obj % self.p != 0:
+                return 0
+            else: # recursion
+                return 1 + self.padic_value(obj / self.p)
+
+    # return the p-adic absolute value 
+    def dist(self,obj1, obj2):
+        diff = abs(obj1 - obj2)
+        # get p-adic valuation of diff
+        return self.p**(-1 * self.padic_value(diff))
+
+# can also attempt to add supremum norm over functions?    
+
 
 '''
 test = DiscreteMetric()
